@@ -1,13 +1,14 @@
 import os
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_groq import ChatGroq
+from langchain.schema import HumanMessage, AIMessage
 from drive_tool import search_drive, list_all_files
 from dotenv import load_dotenv
 
 load_dotenv()
 
 def get_llm():
-    from langchain_groq import ChatGroq
     return ChatGroq(
         model="llama-3.1-8b-instant",
         api_key=os.getenv("GROQ_API_KEY"),
@@ -53,3 +54,13 @@ def create_agent_executor():
         handle_parsing_errors=True,
         max_iterations=10,
     )
+
+def format_history(chat_history: list) -> list:
+    """Convert dict history to LangChain message objects."""
+    messages = []
+    for msg in chat_history:
+        if msg["role"] == "user":
+            messages.append(HumanMessage(content=msg["content"]))
+        elif msg["role"] == "assistant":
+            messages.append(AIMessage(content=msg["content"]))
+    return messages

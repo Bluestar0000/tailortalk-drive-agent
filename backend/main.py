@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from agent import create_agent_executor
+from agent import create_agent_executor, format_history
 
 load_dotenv()
 
@@ -75,9 +76,9 @@ def chat(req: ChatRequest):
 
     try:
         result = executor.invoke({
-            "input": req.message,
-            "chat_history": chat_history,
-        })
+    "input": req.message,
+    "chat_history": format_history(chat_history),
+})
         response = result["output"]
         chat_history.append({"role": "user", "content": req.message})
         chat_history.append({"role": "assistant", "content": response})
