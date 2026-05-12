@@ -1,4 +1,5 @@
 import os
+import json
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from langchain.tools import tool
@@ -8,11 +9,18 @@ load_dotenv()
 
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE", "service_account.json")
+SERVICE_ACCOUNT_JSON = os.getenv("SERVICE_ACCOUNT_JSON", "")
 
 def get_drive_service():
-    creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
-    )
+    if SERVICE_ACCOUNT_JSON:
+        info = json.loads(SERVICE_ACCOUNT_JSON)
+        creds = service_account.Credentials.from_service_account_info(
+            info, scopes=SCOPES
+        )
+    else:
+        creds = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES
+        )
     return build("drive", "v3", credentials=creds)
 
 @tool
