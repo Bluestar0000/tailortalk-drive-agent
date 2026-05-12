@@ -106,3 +106,12 @@ def chat(req: ChatRequest):
 def clear_memory():
     chat_history.clear()
     return {"status": "cleared"}
+@app.get("/debug")
+def debug():
+    import os, json
+    saj = os.getenv("SERVICE_ACCOUNT_JSON", "")
+    try:
+        parsed = json.loads(saj)
+        return {"status": "ok", "project_id": parsed.get("project_id"), "length": len(saj)}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "length": len(saj), "first_chars": saj[:50]}
