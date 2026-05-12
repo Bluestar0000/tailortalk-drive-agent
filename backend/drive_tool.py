@@ -52,4 +52,25 @@ def search_drive(q: str) -> str:
 @tool
 def list_all_files(dummy: str = "") -> str:
     """List all files in the Google Drive folder."""
-    return search_drive("mimeType != 'application/vnd.google-apps.folder'")
+    try:
+        folder_id = os.getenv("DRIVE_FOLDER_ID", "")
+        service = get_drive_service()
+        full_query = f"('{folder_id}' in parents) and (mimeType != 'application/vnd.google-apps.folder') and trashed = false"
+        results = service.files().list(
+            q=full_query,
+            pageSize=20,
+            fields="files(id, name, mimeType, modifiedTime, size, webViewLink)",
+            orderBy="modifiedTime desc",
+        ).execute()
+        files = results.get("files", [])
+        if not files:
+            return "No files found in the folder."
+        output = f"Found {len(files)} file(s):\n\n"
+        for f in files:
+            name = f.get("name", "Unnamed")
+            modified = f.get("modifiedTime", "")[:10]
+            link = f.get("webViewLink", "#")
+            output += f"- {name} | Modified: {modified} | {link}\n"
+        return output
+    except Exception as e:
+        return f"Drive API error: {str(e)}"
