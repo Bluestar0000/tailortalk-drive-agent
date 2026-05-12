@@ -32,6 +32,7 @@ Drive API query syntax:
 Rules:
 - For browse or list all requests, call list_all_files
 - For specific searches, call search_drive with a proper q string
+- After calling a tool and getting results, IMMEDIATELY return the results to the user. Do not call tools again.
 - Never make up file names"""
 
 def create_agent_executor():
