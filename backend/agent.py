@@ -9,7 +9,7 @@ load_dotenv()
 def get_llm():
     from langchain_groq import ChatGroq
     return ChatGroq(
-        model="llama3-groq-70b-8192-tool-use-preview",
+        model="llama-3.1-8b-instant",
         api_key=os.getenv("GROQ_API_KEY"),
         temperature=0.2,
     )
