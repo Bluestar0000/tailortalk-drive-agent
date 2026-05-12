@@ -52,7 +52,7 @@ def create_agent_executor():
         tools=tools,
         verbose=True,
         handle_parsing_errors=True,
-        max_iterations=10,
+        max_iterations=5,
     )
 
 def format_history(chat_history: list) -> list:

@@ -183,7 +183,7 @@ with chat_col:
                     res = requests.post(
                         f"{BACKEND}/chat",
                         json={"message": user_input},
-                        timeout=30,
+                        timeout=60,
                     )
                     data = res.json()
                     reply = data.get("response", "Something went wrong.")
