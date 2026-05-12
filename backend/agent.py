@@ -9,17 +9,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_llm():
+    provider = os.getenv("LLM_PROVIDER", "groq")
+    if provider == "gemini":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        return ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash",
+            google_api_key=os.getenv("GOOGLE_API_KEY"),
+            temperature=0.2,
+        )
     return ChatGroq(
         model="llama-3.3-70b-versatile",
         api_key=os.getenv("GROQ_API_KEY"),
         temperature=0.2,
     )
 
-SYSTEM_PROMPT = """You are a Google Drive file assistant. When a user asks to find files, call the appropriate tool ONCE, get the results, and immediately return them to the user.
+SYSTEM_PROMPT = """You are a Google Drive file assistant. Translate user requests into Drive API query strings and call tools.
 
 Drive API query syntax:
 - name contains 'word'
-- name = 'exact name'
+- name = 'exact name'  
 - mimeType = 'application/pdf'
 - mimeType = 'application/vnd.google-apps.document'
 - mimeType = 'application/vnd.google-apps.spreadsheet'
@@ -30,11 +38,8 @@ Drive API query syntax:
 - combine with and / or
 
 Rules:
-- Call list_all_files for browse/list requests
-- Call search_drive with a proper q string for specific searches
-- Call the tool ONCE then immediately return the results
-- NEVER call a tool more than once per user request
-- After getting tool results, format them nicely and return
+- For browse or list all requests, call list_all_files
+- For specific searches, call search_drive with a proper q string
 - Never make up file names"""
 def create_agent_executor():
     llm = get_llm()
