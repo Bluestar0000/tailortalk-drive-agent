@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-dotenv
+langchain==0.3.25
+langchain-community==0.3.24
+langchain-groq==0.3.8
+langchain-google-genai==2.1.4
+langchain-core==0.3.86
+google-api-python-client
+google-auth
+requests
+pydantic
